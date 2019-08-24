@@ -49,7 +49,25 @@ func initConfig() {
 	viper.SetConfigName("firestore-cli")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
-	if err != nil {
+	switch err.(type) {
+	case viper.ConfigFileNotFoundError:
+		fmt.Print(`Config file not found! Consider creating one.
+
+Possible locations:
+-------------------
+  ./firestore.yaml
+  ~/firestore.yaml
+  ~/.config/firestore-cli/firestore-cli.yaml
+
+Example configuration:
+----------------------
+project: my-awesome-gcp-project
+collection: my_documents
+
+You can also use --project and --collection switches to override these settings.
+
+`)
+	default:
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 }
