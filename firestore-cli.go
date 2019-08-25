@@ -10,6 +10,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/mitchellh/go-homedir"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"google.golang.org/api/iterator"
@@ -94,17 +95,17 @@ var rootCmd = &cobra.Command{
 func preRunE(cmd *cobra.Command, args []string) error {
 	err := validateRequiredParams()
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unable to validate required params")
 	}
 
 	verbose, err = cmd.Flags().GetBool("verbose")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unable to get flag \"verbose\"")
 	}
 
 	err = initFirestoreClient()
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unable to create firestore client")
 	}
 	return nil
 }
@@ -121,7 +122,7 @@ func validateRequiredParams() error {
 func initFirestoreClient() error {
 	var err error
 	client, err = firestore.NewClient(rootCtx, viper.GetString("project"))
-	return err
+	return errors.Wrap(err, "unable to create firestore client")
 }
 
 var getCmd = &cobra.Command{
@@ -145,7 +146,7 @@ func get(_ *cobra.Command, args []string) error {
 	defer cancelFunc()
 	docSnap, err := docRef.Get(ctx)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unable to get document")
 	}
 
 	jsonString, err := jsonString(docSnap.Data())
@@ -180,11 +181,11 @@ func documents(cmd *cobra.Command, _ []string) error {
 func iterate(cmd *cobra.Command, iter *firestore.DocumentIterator) error {
 	limit, err := cmd.Flags().GetInt("limit")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unable to parse flag \"limit\"")
 	}
 	unlimited, err := cmd.Flags().GetBool("unlimited")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unable to parse flag \"unlimited\"")
 	}
 	c := 1
 	for {
@@ -193,7 +194,7 @@ func iterate(cmd *cobra.Command, iter *firestore.DocumentIterator) error {
 			break
 		}
 		if err != nil {
-			return err
+			return errors.Wrap(err, "unable to iterate documents")
 		}
 		jsonString, err := jsonString(doc.Data())
 		if err != nil {
@@ -217,7 +218,7 @@ func jsonString(docData map[string]interface{}) (string, error) {
 		jsonData, err = json.Marshal(docData)
 	}
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "unable to marshal document to json")
 	}
 	return string(jsonData), nil
 }
