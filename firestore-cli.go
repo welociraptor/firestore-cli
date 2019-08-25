@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"google.golang.org/api/iterator"
@@ -46,9 +47,16 @@ func init() {
 }
 
 func initConfig() {
+	home, err := homedir.Dir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	viper.SetConfigName("firestore-cli")
 	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
+	viper.AddConfigPath(home)
+	viper.AddConfigPath(home + "/.config/firestore-cli")
+	err = viper.ReadInConfig()
 	switch err.(type) {
 	case viper.ConfigFileNotFoundError:
 		fmt.Print(`Config file not found! Consider creating one.
