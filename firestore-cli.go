@@ -81,7 +81,7 @@ func main() {
 
 var rootCmd = &cobra.Command{
 	Use:   "firestore-cli",
-	Short: "command line interface for interaction with google cloud firestore",
+	Short: "(Yet another) command line interface for Google Cloud Firestore",
 }
 
 func preRunE(cmd *cobra.Command, args []string) error {
