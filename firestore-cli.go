@@ -82,23 +82,24 @@ func main() {
 var rootCmd = &cobra.Command{
 	Use:   "firestore-cli",
 	Short: "command line interface for interaction with google cloud firestore",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		err := validateRequiredParams()
-		if err != nil {
-			return err
-		}
+}
 
-		verbose, err = cmd.Flags().GetBool("verbose")
-		if err != nil {
-			return err
-		}
+func preRunE(cmd *cobra.Command, args []string) error {
+	err := validateRequiredParams()
+	if err != nil {
+		return err
+	}
 
-		err = initFirestoreClient()
-		if err != nil {
-			return err
-		}
-		return nil
-	},
+	verbose, err = cmd.Flags().GetBool("verbose")
+	if err != nil {
+		return err
+	}
+
+	err = initFirestoreClient()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func validateRequiredParams() error {
@@ -117,10 +118,11 @@ func initFirestoreClient() error {
 }
 
 var getCmd = &cobra.Command{
-	Use:   "get [document id]",
-	Short: "get a document by id",
-	Args:  cobra.ExactArgs(1),
-	RunE:  get,
+	Use:     "get [document id]",
+	Short:   "get a document by id",
+	Args:    cobra.ExactArgs(1),
+	PreRunE: preRunE,
+	RunE:    get,
 }
 
 func get(_ *cobra.Command, args []string) error {
@@ -154,9 +156,10 @@ func collection() *firestore.CollectionRef {
 }
 
 var documentsCmd = &cobra.Command{
-	Use:   "documents",
-	Short: "return all documents in a collection",
-	RunE:  documents,
+	Use:     "documents",
+	Short:   "return all documents in a collection",
+	PreRunE: preRunE,
+	RunE:    documents,
 }
 
 func documents(cmd *cobra.Command, _ []string) error {
@@ -217,8 +220,9 @@ var whereCmd = &cobra.Command{
 	Short: "query for documents",
 	Long: `examples:
 firestore-cli where correlationId == 22da76b6-95c6-4b8f-8381-a60c65752723`,
-	Args: cobra.ExactArgs(3),
-	RunE: where,
+	Args:    cobra.ExactArgs(3),
+	PreRunE: preRunE,
+	RunE:    where,
 }
 
 func where(cmd *cobra.Command, args []string) error {
