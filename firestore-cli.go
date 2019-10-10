@@ -18,7 +18,7 @@ import (
 
 var rootCtx context.Context
 var client *firestore.Client
-var verbose bool
+var verbose, emulator bool
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -45,6 +45,10 @@ func init() {
 	rootCmd.AddCommand(documentsCmd)
 
 	rootCtx = context.Background()
+
+	if os.Getenv("FIRESTORE_EMULATOR_HOST") != "" {
+		emulator = true
+	}
 }
 
 var configNotFound = `Config file not found! Consider creating one.
@@ -137,10 +141,11 @@ var getCmd = &cobra.Command{
 func get(_ *cobra.Command, args []string) error {
 	documentID := args[0]
 	if verbose {
-		fmt.Printf("Finding (ProjectID:%s, CollectionPath:%s, ID:%s)\n",
+		fmt.Printf("Finding (ProjectID:%s, CollectionPath:%s, ID:%s, Emulator:%t)\n",
 			viper.GetString("project"),
 			viper.GetString("collection"),
-			documentID)
+			documentID,
+			emulator)
 	}
 	docRef := collection().Doc(documentID)
 	ctx, cancelFunc := context.WithTimeout(rootCtx, 5*time.Second)
