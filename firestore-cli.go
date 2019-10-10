@@ -97,7 +97,7 @@ var rootCmd = &cobra.Command{
 	Short: "(Yet another) command line interface for Google Cloud Firestore",
 }
 
-func preRunE(cmd *cobra.Command, args []string) error {
+func preRunE(cmd *cobra.Command, _ []string) error {
 	err := validateRequiredParams()
 	if err != nil {
 		return errors.Wrap(err, "unable to validate required params")
