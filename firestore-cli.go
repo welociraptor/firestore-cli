@@ -177,6 +177,12 @@ var documentsCmd = &cobra.Command{
 }
 
 func documents(cmd *cobra.Command, _ []string) error {
+	if verbose {
+		fmt.Printf("(ProjectID:%s, CollectionPath:%s, Emulator:%t)\n",
+			viper.GetString("project"),
+			viper.GetString("collection"),
+			emulator)
+	}
 	ctx, cancelFunc := context.WithTimeout(rootCtx, 5*time.Second)
 	defer cancelFunc()
 	iter := collection().Documents(ctx)
