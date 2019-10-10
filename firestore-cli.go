@@ -47,19 +47,7 @@ func init() {
 	rootCtx = context.Background()
 }
 
-func initConfig() {
-	home, err := homedir.Dir()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	viper.SetConfigName("firestore-cli")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath(home)
-	viper.AddConfigPath(home + "/.config/firestore-cli")
-	err = viper.ReadInConfig()
-	if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-		fmt.Print(`Config file not found! Consider creating one.
+var configNotFound = `Config file not found! Consider creating one.
 
 Possible locations:
 -------------------
@@ -73,8 +61,21 @@ project: my-awesome-gcp-project
 collection: my_documents
 
 You can also use --project and --collection switches to override these settings.
+`
 
-`)
+func initConfig() {
+	home, err := homedir.Dir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	viper.SetConfigName("firestore-cli")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath(home)
+	viper.AddConfigPath(home + "/.config/firestore-cli")
+	err = viper.ReadInConfig()
+	if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+		fmt.Print(configNotFound)
 	} else if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
