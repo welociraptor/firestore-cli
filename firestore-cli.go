@@ -141,7 +141,7 @@ var getCmd = &cobra.Command{
 func get(_ *cobra.Command, args []string) error {
 	documentID := args[0]
 	if verbose {
-		fmt.Printf("Finding (ProjectID:%s, CollectionPath:%s, ID:%s, Emulator:%t)\n",
+		fmt.Printf("{\"ProjectID\":\"%s\", \"CollectionPath\":\"%s\", \"DocumentID\":\"%s\", \"Emulator\":%t}\n",
 			viper.GetString("project"),
 			viper.GetString("collection"),
 			documentID,
@@ -178,7 +178,7 @@ var documentsCmd = &cobra.Command{
 
 func documents(cmd *cobra.Command, _ []string) error {
 	if verbose {
-		fmt.Printf("(ProjectID:%s, CollectionPath:%s, Emulator:%t)\n",
+		fmt.Printf("{\"ProjectID\":\"%s\", \"CollectionPath\":\"%s\", \"Emulator\":%t}\n",
 			viper.GetString("project"),
 			viper.GetString("collection"),
 			emulator)
@@ -257,9 +257,10 @@ func where(cmd *cobra.Command, args []string) error {
 	}
 
 	if verbose, err := cmd.Flags().GetBool("verbose"); err == nil && verbose {
-		fmt.Printf("Querying (project:%s, collection:%s, query:%s %s %v)\n",
+		fmt.Printf("{\"ProjectID\":\"%s\", \"CollectionPath\":\"%s\", \"Emulator\":%t, \"Query\":\"%v %v %v\"}",
 			viper.GetString("project"),
 			viper.GetString("collection"),
+			emulator,
 			path, op, value)
 	}
 	q := collection().Where(path, op, value)
