@@ -55,8 +55,8 @@ var configNotFound = `Config file not found! Consider creating one.
 
 Possible locations:
 -------------------
-  ./firestore.yaml
-  ~/firestore.yaml
+  ./firestore-cli.yaml
+  ~/firestore-cli.yaml
   ~/.config/firestore-cli/firestore-cli.yaml
 
 Example configuration:
